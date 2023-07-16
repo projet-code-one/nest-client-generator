@@ -1,6 +1,6 @@
 {
     "name": "@projet-code-one/nest-client-generator",
-    "version": "1.0.0-alfa.0",
+    "version": "1.0.0-alfa.1",
     "description": "",
     "main": "./dist/cjs/index.js",
     "types": "./dist/cjs/index.d.ts",
