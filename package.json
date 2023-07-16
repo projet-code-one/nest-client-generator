@@ -1,0 +1,40 @@
+{
+    "name": "@projet-code-one/nest-client-generator",
+    "version": "1.0.0-alfa.0",
+    "description": "",
+    "main": "./dist/cjs/index.js",
+    "types": "./dist/cjs/index.d.ts",
+    "scripts": {
+        "build": "tsc -b ./tsconfig.cjs.json",
+        "dev": "tsc -b ./tsconfig.cjs.json --watch",
+        "format": "prettier --write **/*.* *",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+        "lint:apply": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "release:alfa": "release-it --preRelease=alfa --ci",
+        "release": "release-it --ci"
+    },
+    "sideEffects": false,
+    "keywords": [],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/projet-code-one/nest-client-generator.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "ts-morph": "^19.0.0"
+    },
+    "devDependencies": {
+        "@projet-code-one/coding-rules": "^1.0.4",
+        "@types/node": "^20.4.2",
+        "@typescript-eslint/eslint-plugin": "^5.59.11",
+        "@typescript-eslint/parser": "^5.59.11",
+        "eslint": "^8.43.0",
+        "eslint-config-prettier": "^8.8.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "prettier": "^2.8.8",
+        "release-it": "^16.1.0",
+        "source-map-support": "^0.5.21",
+        "typescript": "^5.1.3"
+    }
+}

@@ -1,0 +1,13 @@
+{
+	"hooks": {
+		"after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+	},
+	"git": {
+		"commitMessage": "release: Create version ${version}",
+		"tagName": "${version}",
+		"tagAnnotation": "release: V ${version}"
+	},
+	"npm": {
+		"publish": false
+	}
+}
