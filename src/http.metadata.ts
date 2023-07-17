@@ -7,7 +7,7 @@ export interface HttpMethodMetaData {
   name: string;
   path: (string | PathParameter)[];
   method: HttpMethod;
-  requestBody?: { name: string; type: Type };
+  requestBody?: { name: string; type: Type; method: any };
   responseBody?: { type: Type };
   queryParameters?: { name: string; type: Type };
 }

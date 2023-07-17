@@ -16,6 +16,7 @@ import {
 } from './http.metadata';
 
 export class NestControllerExtractor {
+  a: any;
   private readonly httpMethodByDecoratorName: Record<string, HttpMethod> = {
     Get: 'GET',
     Post: 'POST',
@@ -38,6 +39,7 @@ export class NestControllerExtractor {
   }
 
   private extractHttpFileMetadata(sourceFile: SourceFile): HttpFileMetaData {
+    this.a = sourceFile;
     return {
       apiName: this.extractApiName(sourceFile),
       fileBaseName: this.extractFileBaseName(sourceFile),
@@ -141,7 +143,7 @@ export class NestControllerExtractor {
   ): (string | PathParameter)[] {
     const path = basePath + this.extractPathOfDecorator(decorator);
     return path.split('/').map((p) => {
-      const parameterParser = /^:[^(]+/.exec(p);
+      const parameterParser = /^:([^(]+)/.exec(p);
       if (parameterParser) {
         const parameterName = parameterParser[1];
         const parameterType = this.extractPathParameterType(
@@ -168,6 +170,9 @@ export class NestControllerExtractor {
         if (parameterDecoratorName === parameterName) {
           return parameter.getType();
         }
+        console.log(
+          `find param decorator ${parameterDecoratorName} but expected ${parameterName}`,
+        );
         continue;
       }
       const parametersDecorator = parameter.getDecorator('Params');
@@ -185,7 +190,7 @@ export class NestControllerExtractor {
 
   private extractRequestBody(
     method: MethodDeclaration,
-  ): { name: string; type: Type } | undefined {
+  ): { name: string; type: Type; method: any } | undefined {
     const bodyParameter = method
       .getParameters()
       .find((p) => p.getDecorator('Body') !== undefined);
@@ -194,13 +199,18 @@ export class NestControllerExtractor {
     if (this.isPromiseType(bodyParameterType)) {
       bodyParameterType = bodyParameterType.getTypeArguments()[0];
     }
-    return { name: bodyParameter.getName(), type: bodyParameterType };
+
+    return {
+      name: bodyParameter.getName(),
+      type: bodyParameterType,
+      method: this.a,
+    };
   }
 
   private extractResponseBody(
     method: MethodDeclaration,
   ): { type: Type } | undefined {
-    let responseType = method.getType();
+    let responseType = method.getReturnType();
     if (this.isPromiseType(responseType)) {
       responseType = responseType.getTypeArguments()[0];
     }

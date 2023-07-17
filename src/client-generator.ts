@@ -16,6 +16,7 @@ import {
 } from './http.metadata';
 
 export class ClientGenerator {
+  a: any;
   public generateClientFiles(
     project: Project,
     filesMetaData: HttpFileMetaData[],
@@ -42,9 +43,11 @@ export class ClientGenerator {
     clientFile: SourceFile,
     httpFileMetaData: HttpFileMetaData,
   ): void {
+    this.a = clientFile;
     for (const httpClassMetaData of httpFileMetaData.classes) {
       this.generateClientClass(clientFile, httpClassMetaData);
     }
+    clientFile.import();
   }
 
   private generateClientClass(
@@ -54,6 +57,17 @@ export class ClientGenerator {
     const clientClass = clientFile.addClass({
       name: `${httpClassMetaData.baseName}Client`,
       isExported: true,
+    });
+
+    clientClass.addConstructor({
+      parameters: [
+        {
+          name: 'http',
+          type: 'HttpClient',
+          scope: Scope.Private,
+          isReadonly: true,
+        },
+      ],
     });
 
     for (const httpMethodMetaData of httpClassMetaData.methods) {
@@ -77,7 +91,7 @@ export class ClientGenerator {
 
     clientClass.addMethod({
       name: httpMethodMetaData.name,
-      returnType: `Promise<${responseBody?.type ?? 'void'}>`,
+      returnType: `Promise<${responseBody?.type?.getText() ?? 'void'}>`,
       parameters,
       isAsync: true,
       scope: Scope.Public,
@@ -87,7 +101,7 @@ export class ClientGenerator {
             .map((p) => (typeof p === 'string' ? p : `\${${p.parameterName}}`))
             .join('/')}\`;`,
         );
-        writer.writeLine(`return http.request({`);
+        writer.writeLine(`return this.http.request({`);
         writer.writeLine(`  ...options,`);
         writer.writeLine(`  url,`);
         writer.writeLine(`  method: '${methodType}',`);
@@ -126,7 +140,7 @@ export class ClientGenerator {
       parameters.push({
         kind: StructureKind.Parameter,
         name: requestBody.name,
-        type: requestBody.type.getText(),
+        type: requestBody.type.getText(), // (requestBody.method),
       });
     }
 
@@ -142,6 +156,7 @@ export class ClientGenerator {
       kind: StructureKind.Parameter,
       name: 'options',
       type: 'RequestOptions',
+      hasQuestionToken: true,
     });
 
     return parameters;
